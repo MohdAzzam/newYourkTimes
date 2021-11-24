@@ -4,6 +4,11 @@ import Loading from "../../compnents/Loading";
 import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
 import TopStroy from "./TopStroy";
 import {useNavigate} from "react-router-dom";
+import {authHelper} from "../../api/helpers/AuthHelper";
+import {login} from "../../store/userSlice";
+import {useDispatch} from "react-redux";
+import store from "../../store/store"
+import jwt_decode from "jwt-decode";
 
 export default function Home() {
     const [topStories, setTopStories] = useState([]);
@@ -12,7 +17,8 @@ export default function Home() {
     const [articlesSearch,setArticlesSearch]=useState(false);
     const categories = ['world', 'science'];
     let navigate = useNavigate();
-
+    const state = store.getState();
+    // const [user,setUSer]=useState(state.user?.user.token);
     /**
      *
      * Call Api to set categories search
@@ -42,7 +48,29 @@ export default function Home() {
 
         }
 }
+const dispatch=useDispatch();
 
+    /**
+     * update Token every 15 minutes
+     */
+    useEffect(()=>{
+    const updateToken = 1000*60*1;
+    const authToken=1000;
+    let interval =setInterval(()=>{
+     console.log('inside interval ')
+        authHelper.login(jwt_decode(state.user.user.token)).then(res=>{
+            console.log(res.data);
+            localStorage.setItem("authUser",JSON.stringify(res.data));
+            dispatch(login({
+                token:res.data.access_token,
+            }))
+
+        }).catch(err=>{
+            console.log(err);
+        })
+    },updateToken)
+    return ()=>clearInterval(interval);
+},[])
     return (
         <Container className="mt-5">
             <section className="d-flex justify-content-center mb-3">
@@ -63,7 +91,7 @@ export default function Home() {
                         <label htmlFor="search" className="col-5 p-0 mt-1 font-weight-bold">Search for articles</label>
                         <img src="https://img.icons8.com/material-outlined/20/000000/search--v1.png" alt="search"
                              className="search" onClick={handleSearch}/>
-                        <input type="search" className="form-control " onChange={(e) => setArticlesSearch(e.target.value)}/>
+                        <input type="text" className="form-control " onChange={(e) => setArticlesSearch(e.target.value)}/>
                     </form>
 
                 </div>
