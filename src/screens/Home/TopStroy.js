@@ -10,10 +10,13 @@ export default function TopStroy({item}) {
     return (
         <div className="mt-4">
             <Card className="mt-4">
+                <Card.Header>
+                    {item.title}
+                    <Card.Subtitle className="mb-2 text-muted mt-1">{item.published_date}</Card.Subtitle>
+                </Card.Header>
                 <Card.Body>
-                    <Card.Title>{item.section}</Card.Title>
                     <Card.Text>
-                        {item.title}
+                        {item.abstract}
                     </Card.Text>
                     <div className="btn btn-light" onClick={toggelDetails}>Show</div>
                     {showDetails?(
@@ -21,6 +24,9 @@ export default function TopStroy({item}) {
                     ):[]}
 
                 </Card.Body>
+                <Card.Footer>
+                    {item.byline}
+                </Card.Footer>
             </Card>
         </div>
     )

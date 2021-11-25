@@ -1,15 +1,14 @@
 import React, {useEffect} from "react";
 import {Container} from "react-bootstrap";
+import * as Yup from "yup";
 import {useForm} from "react-hook-form";
-import * as Yup from 'yup';
-import {yupResolver} from '@hookform/resolvers/yup';
+import {yupResolver} from "@hookform/resolvers/yup";
 import {useDispatch} from "react-redux";
-import {login, logout} from "../../store/userSlice";
-import {useHistory} from "react-router-dom";
 import {authHelper} from "../../api/helpers/AuthHelper";
+import {login} from "../../store/userSlice";
 
-export default function Login() {
-    const history=useHistory();
+
+export default function Register() {
     const validation = Yup.object().shape({
         email: Yup.string()
             .required(),
@@ -34,17 +33,14 @@ export default function Login() {
 
     const dispatch = useDispatch();
     const onSubmit = (form) => {
-        authHelper.login(form).then(response=>{
+        authHelper.register(form).then(response=>{
             dispatch(login({
                 token:response.data.access_token,
             }))
-            history.push("/home");
-
         }).catch(err=>{
             console.log(err)
         })
     }
-
     return (
         <Container className="mt-4">
 
@@ -72,14 +68,16 @@ export default function Login() {
                     />
                     {errors['email'] || errors['password'] ? (
                         <div className="d-flex  flex-column col-4 justify-content-center">
-                            {errors['email']?( <label className="alert alert-danger mt-4 " role="alert">{errors['email']?.message}</label>):[]}
-                            {errors['password']?( <label className="alert alert-danger mt-4 " role="alert">{errors['password']?.message}</label>):[]}
+                            {errors['email'] ? (<label className="alert alert-danger mt-4 "
+                                                       role="alert">{errors['email']?.message}</label>) : []}
+                            {errors['password'] ? (<label className="alert alert-danger mt-4 "
+                                                          role="alert">{errors['password']?.message}</label>) : []}
                         </div>
-                            ):[]}
+                    ) : []}
 
                 </div>
 
-                <button type="submit" className="btn btn-primary">Submit</button>
+                <button type="submit" className="btn btn-primary">Register</button>
             </form>
 
         </Container>
