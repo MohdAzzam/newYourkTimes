@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Card, Pagination} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
-import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
+import {TopStoriesHelper} from "../../util/useAxios";
 import Loading from "../../compnents/Loading";
 import {useDispatch} from "react-redux";
 import {searchQuery} from "../../store/userSlice";
@@ -65,11 +65,14 @@ export default function Articles() {
                     </Card.Body>
                 </Card>
             ))}
-            <div className="pagination-wrapper mt-4 d-flex justify-content-center">
-                <p className="btn btn-primary" onClick={handlePrevChange}>Prev</p>
-                <p className="mr-1 ml-1 mb-1">{currentPage + 1}</p>
-                <p className="btn btn-primary" onClick={handleNextChange}>Next</p>
-            </div>
+            {!isLoading ? (
+                <div className="pagination-wrapper mt-4 d-flex justify-content-center">
+                    <p className="btn btn-primary" onClick={handlePrevChange}>Prev</p>
+                    <p className="mr-1 ml-1 mb-1">{currentPage + 1}</p>
+                    <p className="btn btn-primary" onClick={handleNextChange}>Next</p>
+                </div>
+            ) : []}
+
 
         </section>
 

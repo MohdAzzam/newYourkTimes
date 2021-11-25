@@ -10,10 +10,11 @@ export const userSlice = createSlice({
     reducers: {
         login: (state, action) => {
             state.user = action.payload;
-
+            localStorage.setItem("authUser",JSON.stringify(state.user))
         },
         logout: (state) => {
             state.user = null;
+            localStorage.removeItem("authUser");
         },
         searchQuery : (state , action)=>{
            // const found =state.searchData.find(ele=>ele===action.payload);
@@ -26,6 +27,9 @@ export const userSlice = createSlice({
                    state.searchData.pop();
                    state.searchData.unshift(action.payload);
                }
+            localStorage.removeItem("lastFive",JSON.stringify(state.searchData));
+
+            localStorage.setItem("lastFive",JSON.stringify(state.searchData));
            }
     }
 })
@@ -42,6 +46,6 @@ function getUser() {
 
 export const {login, logout,searchQuery} = userSlice.actions;
 
-export const selectUser = (state) => state.user;
+export const selectUser = (state) => state.user.user;
 
 export default userSlice.reducer;
