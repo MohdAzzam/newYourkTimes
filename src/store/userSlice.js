@@ -5,46 +5,46 @@ export const userSlice = createSlice({
     name: "user",
     initialState: {
         user: null,
-        searchData:[]
+        searchData:[],
+        errorMessage:null
     },
     reducers: {
         login: (state, action) => {
             state.user = action.payload;
-            localStorage.setItem("authUser",JSON.stringify(state.user))
+            storage.set("authUser",state.user)
+
         },
         logout: (state) => {
             state.user = null;
-            localStorage.removeItem("authUser");
+            storage.remove("authUser");
         },
         searchQuery : (state , action)=>{
-           // const found =state.searchData.find(ele=>ele===action.payload);
-           //  const test= (state.searchData.indexOf(`${action.payload.query}`) > -1);
-           //  console.log(action.payload.query);
-           //  console.log(test + 'azzam');
                if(state.searchData.length<5){
                    state.searchData.push(action.payload);
                }else{
                    state.searchData.pop();
                    state.searchData.unshift(action.payload);
                }
-            localStorage.removeItem("lastFive",JSON.stringify(state.searchData));
-
-            localStorage.setItem("lastFive",JSON.stringify(state.searchData));
-           }
+            storage.remove("lastFive");
+            storage.set("lastFive",state.searchData)
+           },
+        errorMessage:(state,action)=>{
+            state.errorMessage=action.payload;
+        }
     }
 })
-/**
- * Get user from local stroage
- *
- * @returns {Object|Boolean}
- */
-function getUser() {
-    const user = storage.get('user-info');
-    if (!user) return false;
-    return user;
-}
+// /**
+//  * Get user from local stroage
+//  *
+//  * @returns {Object|Boolean}
+//  */
+// function getUser() {
+//     const user = storage.get('user-info');
+//     if (!user) return false;
+//     return user;
+// }
 
-export const {login, logout,searchQuery} = userSlice.actions;
+export const {login, logout,searchQuery,errorMessage} = userSlice.actions;
 
 export const selectUser = (state) => state.user.user;
 

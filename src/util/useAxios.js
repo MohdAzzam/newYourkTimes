@@ -1,66 +1,75 @@
+
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
-import store from "../store/store";
-import {useSelector} from "react-redux";
-import {login, selectUser} from "../store/userSlice";
+import {login} from "../store/userSlice";
 import {authHelper} from "../api/helpers/AuthHelper";
 import {useDispatch} from "react-redux";
 import {APIKEY} from "../Constanat";
-const axiosInstance = axios.create({
-    baseURL: "https://api.nytimes.com/svc/",
-    // headers:{Authorization :`Bearer ${user.token}`}
-    params: {
-        "api-key":APIKEY,
-    },
-})
-export default function useAxios(){
+import storage from "./storage";
 
-    const state = store.getState();
-    const user = useSelector(selectUser);
-    const dispatch=useDispatch();
 
-    /**
-     * Request interceptors
-     */
+export default function useAxios() {
+    const dispatch = useDispatch();
+    const user = storage.get("authUser");
+
+    const axiosInstance = axios.create({
+        baseURL: "https://api.nytimes.com/svc/",
+        // headers: {Authorization: `Bearer ${user.token}`},
+        params: {
+            "api-key": APIKEY,
+        }
+    })
+
+
     axiosInstance.interceptors.request.use(async config => {
-        // get the token from redux and verify the time
-        const userData =jwt_decode(user?.token)
-        const isExpired= dayjs.unix(userData.exp).diff(dayjs()) < 1 ;
-        // console.log("isExpired ",isExpired);
-        if(!isExpired) return config;
-        //
-        const response = authHelper.login(user).then(response=>{
-            // console.log(response.data)
-            localStorage.setItem('authToken',JSON.stringify(response.data))
-            dispatch(login({
-                token:response.data.access_token,
-            }))
-        }).catch(err=>{
-            console.log(err)
-        })
+        // get the token from localstorage and verify the time
+        const userData = jwt_decode(user?.token)
+        console.log(userData.exp);
+        let currentTimeStamp = new Date().getTime() / 1000;
+        console.log(currentTimeStamp);
+        // check if token need less than 15 minutes to expire
+        let timeDiff = userData.exp - currentTimeStamp;
+        //then renew it
+        let fiftyMinutes = 60 * 45;
+        console.log(timeDiff);
+        if (timeDiff <= fiftyMinutes && timeDiff > 0) {
+            authHelper.login(userData).then(response => {
+                console.log(response.data)
+                storage.set('authUser', response.data, true)
+                dispatch(login({
+                    token: response.data.access_token,
+                }))
+                storage.set("authUser", response.data.access_token, true)
+                // config.headers.authorization=`Bearer ${response.data.access_token}`;
+                return config;
+            }).catch(err => {
+                console.log(err)
+            })
+        }
         return config;
+
 
     });
     return axiosInstance;
 }
 
-export const TopStoriesHelper={
-    list:(section)=>{
-        return axiosInstance.get(`topstories/v2/${section}.json`);
-    },
-    search:(query,page=0)=>{
-        //&page=0 send it from pagination
-        return axiosInstance.get(`search/v2/articlesearch.json?q=${query}&page=${page}`)
-    },
-    comments:(url)=>{
-
-        return axiosInstance.get(`community/v3/user-content/url.json`,{
-            params:{
-                offset:0,
-                url:encodeURI(url)
-            }
-        });
-    }
-
-}
+// export const TopStoriesHelper = {
+//     list: (section) => {
+//         return axiosInstance.get(`topstories/v2/${section}.json`);
+//     },
+//     search: (query, page = 0) => {
+//         //&page=0 send it from pagination
+//         return axiosInstance.get(`search/v2/articlesearch.json?q=${query}&page=${page}`)
+//     },
+//     comments: (url) => {
+//
+//         return axiosInstance.get(`community/v3/user-content/url.json`, {
+//             params: {
+//                 offset: 0,
+//                 url: encodeURI(url)
+//             }
+//         });
+//     }
+//
+// }

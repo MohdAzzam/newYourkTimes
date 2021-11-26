@@ -1,45 +1,37 @@
 import React, {useEffect, useState} from "react";
 import {Container} from "react-bootstrap";
 import Loading from "../../compnents/Loading";
-// import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
 import TopStroy from "./TopStroy";
 import {useHistory} from "react-router-dom";
-import {authHelper} from "../../api/helpers/AuthHelper";
-import {login} from "../../store/userSlice";
-import {useDispatch} from "react-redux";
-import store from "../../store/store"
-import jwt_decode from "jwt-decode";
-import {TopStoriesHelper} from "../../util/useAxios"
+// import {TopStoriesHelper} from "../../util/useAxios"
+import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
+import useAxios from "../../util/useAxios";
+import {APIKEY} from "../../Constanat";
 
 export default function Home() {
     const [topStories, setTopStories] = useState([]);
     const [category, setCategory] = useState('world');
     const [isLoading, setIsLoading] = useState(false);
     const [articlesSearch, setArticlesSearch] = useState(false);
-    const [lastFiveSearch, setLastFiveSearch] = useState(false);
     const categories = ['world', 'science'];
     let history = useHistory();
-    const state = store.getState();
-    // console.log(state.user['searchData']);
-    // const lastFive =state.user['searchData']
-    useEffect(() => {
-        setLastFiveSearch(...state.user['searchData']);
-    }, [state.user['searchData']])
-    // console.log(state.user.user.token);
     /**
      *
      * Call Api to set categories search
      */
+    const api = useAxios();
     useEffect(() => {
         setIsLoading(true);
-        TopStoriesHelper.list(category).then(response => {
-            setTopStories(response.data.results)
+        api.get(`topstories/v2/${category}.json`).then(res => {
+            // console.log("here")
+            setTopStories(res.data.results)
             setIsLoading(false);
         }).catch(err => {
             console.log(err);
             setIsLoading(false);
 
         })
+
     }, [category])
 
 

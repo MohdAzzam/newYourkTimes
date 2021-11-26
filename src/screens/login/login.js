@@ -1,15 +1,26 @@
-import React, {useEffect} from "react";
-import {Container} from "react-bootstrap";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as Yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useDispatch} from "react-redux";
-import {login, logout} from "../../store/userSlice";
+import {errorMessage, login} from "../../store/userSlice";
 import {useHistory} from "react-router-dom";
 import {authHelper} from "../../api/helpers/AuthHelper";
 
+/**
+ *
+ * Login Screen
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Login() {
-    const history=useHistory();
+
+    const history = useHistory();
+    const [loginError, setLoginError] = useState("");
+    const dispatch = useDispatch();
+    /**
+     * Validate the schema
+     */
     const validation = Yup.object().shape({
         email: Yup.string()
             .required(),
@@ -20,7 +31,7 @@ export default function Login() {
     /**
      * Export Form function
      */
-    const {setError, register, handleSubmit, setValue, formState: {errors}} = useForm({
+    const {register, handleSubmit, setValue, formState: {errors}} = useForm({
         resolver: yupResolver(validation)
     });
     /**
@@ -30,23 +41,35 @@ export default function Login() {
         register('email');
         register('password');
 
-    }, [])
+    }, [register])
 
-    const dispatch = useDispatch();
+    /**
+     * Call the login api
+     * store the state in redux
+     * redirect user to home page
+     * @param form
+     */
     const onSubmit = (form) => {
-        authHelper.login(form).then(response=>{
+        authHelper.login(form).then(response => {
             dispatch(login({
-                token:response.data.access_token,
+                token: response.data.access_token,
+                isLoggedIn: true
             }))
-            history.push("/home");
+            history.push("/");
 
-        }).catch(err=>{
-            console.log(err)
+        }).catch(err => {
+            /**
+             * Set The Error into redux
+             */
+            setLoginError(err.response?.data.message);
+            dispatch(errorMessage({
+                error: err.response?.data.message
+            }))
         })
     }
 
     return (
-        <Container className="mt-4">
+        <div className="container">
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-group">
@@ -72,16 +95,22 @@ export default function Login() {
                     />
                     {errors['email'] || errors['password'] ? (
                         <div className="d-flex  flex-column col-4 justify-content-center">
-                            {errors['email']?( <label className="alert alert-danger mt-4 " role="alert">{errors['email']?.message}</label>):[]}
-                            {errors['password']?( <label className="alert alert-danger mt-4 " role="alert">{errors['password']?.message}</label>):[]}
+                            {errors['email'] ? (<label className="alert alert-danger mt-4 "
+                                                       role="alert">{errors['email']?.message}</label>) : []}
+                            {errors['password'] ? (<label className="alert alert-danger mt-4 "
+                                                          role="alert">{errors['password']?.message}</label>) : []}
                         </div>
-                            ):[]}
-
+                    ) : []}
+                    {loginError && loginError ? (
+                        <div className="alert alert-danger mt-3">
+                            {loginError}
+                        </div>
+                    ) : []}
                 </div>
 
-                <button type="submit" className="btn btn-primary">Submit</button>
+                <button type="submit" className="btn btn-primary">Login</button>
             </form>
 
-        </Container>
+        </div>
     );
 }
