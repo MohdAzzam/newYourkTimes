@@ -1,5 +1,7 @@
 # NewYork Times API 
 
+    Fetch the API Stories data from nytimes api
+    also use the search api
 --------------------------------
 
 ## How to install 
