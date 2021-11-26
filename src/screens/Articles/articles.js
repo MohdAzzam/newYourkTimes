@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {Card, Pagination} from "react-bootstrap";
+import {Card} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
-import {TopStoriesHelper} from "../../util/useAxios";
+// import {TopStoriesHelper} from "../../util/useAxios";
+import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
 import Loading from "../../compnents/Loading";
 import {useDispatch} from "react-redux";
 import {searchQuery} from "../../store/userSlice";

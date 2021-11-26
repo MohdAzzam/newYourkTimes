@@ -1,31 +1,45 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {Container, Nav, Navbar} from "react-bootstrap";
-import store from "./store/store";
 import {useDispatch, useSelector} from "react-redux";
 import {logout, selectUser} from "./store/userSlice";
+import storage from "./util/storage";
 
-export default function Header(){
-    const state = store.getState();
-    const user = localStorage.getItem("authUser")
-    const dispatch=useDispatch();
+export default function Header() {
 
-    const handleLogout =()=>{
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const state = useSelector(selectUser);
+
+    useEffect(() => {
+      setIsLoggedIn(state?.isLoggedIn);
+    }, [state])
+
+    const dispatch = useDispatch();
+    const handleLogout = () => {
         dispatch(logout());
-        window.reload();
+        window.location.reload();
 
     }
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
             <Container>
-                <Navbar.Brand ><Link to="/home">NY</Link></Navbar.Brand>
-                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                <Link className="navbar-brand" to="/home">NY</Link>
+                <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
-                        {user?(<Link to="/home" className="nav-link">Home</Link>):[]}
-                        {user?(<div to="#" className="nav-link" onClick={handleLogout}>Logout</div>):[]}
-                        {!user?(<Link to="/login" className="nav-link">Login</Link>):[]}
-                        {!user?(<Link to="/register" className="nav-link">Register</Link>):[]}
+                        {isLoggedIn ? (
+                            <>
+                                <Link to="/home" className="nav-link">Home</Link>
+                                <div to="#" className="nav-link" onClick={handleLogout}>Logout</div>
+
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/login" className="nav-link">Login</Link>
+                                <Link to="/register" className="nav-link">Register</Link>
+                            </>
+                        )}
+
                     </Nav>
                 </Navbar.Collapse>
             </Container>

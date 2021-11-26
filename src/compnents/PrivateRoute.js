@@ -1,14 +1,9 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 
-import store from "../store/store";
-import {useSelector} from "react-redux";
-import {selectUser} from "../store/userSlice";
 export default function PrivateRoute({ component: Component, ...props }) {
     const path = props.computedMatch.path;
-    const state = store.getState();
-    const user = useSelector(selectUser);
-    const user1 = localStorage.getItem("authUser");
+    const user= localStorage.getItem("authUser");
     let userNotAllow = false;
 
     if (path !== "login" || path !== "register") {
@@ -19,7 +14,7 @@ export default function PrivateRoute({ component: Component, ...props }) {
         <Route
             {...props}
             render={(renderProps) =>
-                !user1 && userNotAllow ? (
+                !user && userNotAllow ? (
                     <Redirect
                         to={{
                             pathname: "/login",

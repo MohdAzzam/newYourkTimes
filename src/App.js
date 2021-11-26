@@ -3,14 +3,18 @@ import Main from "./main";
 
 import Footer from "./footer";
 
-import {BrowserRouter as Router} from "react-router-dom";
+import {BrowserRouter} from "react-router-dom";
+import store from "./store/store";
+import {Provider} from "react-redux";
 
 export default function App() {
     return (
-        <Router>
-            <Header/>
-            <Main/>
-            <Footer/>
-        </Router>
+        <BrowserRouter>
+            <Provider store={store}>
+                <Header/>
+                <Main/>
+                <Footer/>
+            </Provider>
+        </BrowserRouter>
     );
 }
