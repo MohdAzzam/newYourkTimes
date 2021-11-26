@@ -3,10 +3,7 @@ import {Container} from "react-bootstrap";
 import Loading from "../../compnents/Loading";
 import TopStroy from "./TopStroy";
 import {useHistory} from "react-router-dom";
-// import {TopStoriesHelper} from "../../util/useAxios"
-import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
 import useAxios from "../../util/useAxios";
-import {APIKEY} from "../../Constanat";
 import storage from "../../util/storage";
 
 export default function Home() {
@@ -36,7 +33,6 @@ export default function Home() {
     }, [category])
 
     useEffect(()=>{
-        console.log("here");
         setLastFiveSearch(storage.get("lastFive"));
 
     },[storage])

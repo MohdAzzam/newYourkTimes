@@ -41,7 +41,6 @@ export const userSlice = createSlice({
             }else{
                 state.searchData.push(action.payload);
                 storage.set("lastFive", state.searchData);
-
             }
         },
         errorMessage: (state, action) => {

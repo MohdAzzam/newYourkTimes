@@ -1,17 +1,20 @@
 import React, {useEffect, useState} from "react";
 import {Card} from "react-bootstrap";
+import Pagination from "react-js-pagination";
+
 import {useLocation} from "react-router-dom";
-// import {TopStoriesHelper} from "../../util/useAxios";
-import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
 import Loading from "../../compnents/Loading";
 import {useDispatch} from "react-redux";
 import {errorMessage, searchQuery} from "../../store/userSlice";
 import useAxios from "../../util/useAxios";
+
+
 export default function Articles() {
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const api = useAxios();
+
     function useQuery() {
         const {search} = useLocation();
 
@@ -32,26 +35,20 @@ export default function Articles() {
             query
         }))
         setIsLoading(true);
-        api.get(`search/v2/articlesearch.json?q=${query}&page=${currentPage}`).then(response=>{
+        api.get(`search/v2/articlesearch.json?q=${query}&page=${currentPage}`).then(response => {
             setSearchResults(response.data.response.docs);
             setIsLoading(false);
 
-        }).catch(error=>{
+        }).catch(error => {
             dispatch(errorMessage({
-                error:error
+                error: error
             }))
             setIsLoading(false);
         })
     }, [query, currentPage])
-    const handlePrevChange = () => {
-        if (currentPage !== 0) {
-            setCurrentPage(currentPage - 1);
-        }
-    }
-    const handleNextChange = () => {
-        if (currentPage >= 0) {
-            setCurrentPage(currentPage + 1);
-        }
+
+    const handleChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     }
     return (
         <section>
@@ -66,15 +63,22 @@ export default function Articles() {
                     </Card.Body>
                 </Card>
             ))}
+
             {!isLoading ? (
                 <div className="pagination-wrapper mt-4 d-flex justify-content-center">
-                    <p className="btn btn-primary" onClick={handlePrevChange}>Prev</p>
-                    <p className="mr-1 ml-1 mb-1">{currentPage + 1}</p>
-                    <p className="btn btn-primary" onClick={handleNextChange}>Next</p>
+
+                    <Pagination
+                        activePage={currentPage}
+                        itemsCountPerPage={10}
+                        totalItemsCount={1000}
+                        pageRangeDisplayed={5}
+                        linkClass={"page-link"}
+                        activeClass="active-link"
+                        disabledClass="disabled-link"
+                        onChange={handleChange}
+                    />
                 </div>
             ) : []}
-
-
         </section>
 
     );
