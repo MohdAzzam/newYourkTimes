@@ -2,8 +2,10 @@ import React from "react";
 
 export default function Footer(){
     return (
-        <div className="container mt-4">
-            Footer
-        </div>
+        <footer id="footer">
+            <section className="d-flex justify-content-center">
+                <label className="message">All right reserved &copy; Azzam</label>
+            </section>
+        </footer>
     );
 }

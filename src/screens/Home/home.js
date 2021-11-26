@@ -76,11 +76,14 @@ export default function Home() {
                 </div>
             </section>
             {lastFiveSearch?(
-                <div className="mt-4 mb-4">
-                    <p>Last 5 Search</p>
-                    <ul>
-                        {lastFiveSearch && lastFiveSearch.map((item, index) => (
-                            <li key={index}>{item.query}</li>
+                <div className="mt-4 mb-4 col-4">
+                    <h4>Last 5 Search</h4>
+                    <ul className="list-group">
+                    {lastFiveSearch && lastFiveSearch.map((item, index) => (
+                            <li className={index===0?"list-group-item d-flex justify-content-between align-items-center active":"list-group-item d-flex justify-content-between align-items-center"} key={index}>
+                                {item.query}
+                                <span className="badge badge-primary badge-pill">{index+1}</span>
+                            </li>
                         ))}
                     </ul>
                 </div>
