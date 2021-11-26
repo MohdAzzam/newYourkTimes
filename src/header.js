@@ -11,8 +11,9 @@ export default function Header() {
     const state = useSelector(selectUser);
 
     useEffect(() => {
-      setIsLoggedIn(state?.isLoggedIn);
-    }, [state])
+
+      setIsLoggedIn(storage.get("authUser"));
+    }, [storage,state])
 
     const dispatch = useDispatch();
     const handleLogout = () => {

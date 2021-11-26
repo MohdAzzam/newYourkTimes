@@ -1,8 +1,6 @@
-
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import dayjs from "dayjs";
-import {login} from "../store/userSlice";
+import {errorMessage, login} from "../store/userSlice";
 import {authHelper} from "../api/helpers/AuthHelper";
 import {useDispatch} from "react-redux";
 import {APIKEY} from "../Constanat";
@@ -25,17 +23,13 @@ export default function useAxios() {
     axiosInstance.interceptors.request.use(async config => {
         // get the token from localstorage and verify the time
         const userData = jwt_decode(user?.token)
-        console.log(userData.exp);
         let currentTimeStamp = new Date().getTime() / 1000;
-        console.log(currentTimeStamp);
         // check if token need less than 15 minutes to expire
         let timeDiff = userData.exp - currentTimeStamp;
         //then renew it
         let fiftyMinutes = 60 * 45;
-        console.log(timeDiff);
         if (timeDiff <= fiftyMinutes && timeDiff > 0) {
             authHelper.login(userData).then(response => {
-                console.log(response.data)
                 storage.set('authUser', response.data, true)
                 dispatch(login({
                     token: response.data.access_token,
@@ -44,7 +38,9 @@ export default function useAxios() {
                 // config.headers.authorization=`Bearer ${response.data.access_token}`;
                 return config;
             }).catch(err => {
-                console.log(err)
+                dispatch(errorMessage({
+                    error: err
+                }))
             })
         }
         return config;

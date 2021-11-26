@@ -7,6 +7,7 @@ import {useHistory} from "react-router-dom";
 import {TopStoriesHelper} from "../../api/helpers/TopStoriesHelper";
 import useAxios from "../../util/useAxios";
 import {APIKEY} from "../../Constanat";
+import storage from "../../util/storage";
 
 export default function Home() {
     const [topStories, setTopStories] = useState([]);
@@ -14,6 +15,7 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(false);
     const [articlesSearch, setArticlesSearch] = useState(false);
     const categories = ['world', 'science'];
+    const [lastFiveSearch,setLastFiveSearch]=useState(false);
     let history = useHistory();
     /**
      *
@@ -31,9 +33,13 @@ export default function Home() {
             setIsLoading(false);
 
         })
-
     }, [category])
 
+    useEffect(()=>{
+        console.log("here");
+        setLastFiveSearch(storage.get("lastFive"));
+
+    },[storage])
 
     const handleChange = (e) => {
         setCategory(e.target.value);
@@ -46,29 +52,7 @@ export default function Home() {
 
         }
     }
-    // const dispatch = useDispatch();
-    // console.log(lastFiveSearch);
-    /**
-     * update Token every 15 minutes
-     */
-//     useEffect(()=>{
-//     const updateToken = 1000*60*1;
-//     const authToken=1000;
-//     let interval =setInterval(()=>{
-//      console.log('inside interval ')
-//         authHelper.login(jwt_decode(state.user.user.token)).then(res=>{
-//             console.log(res.data);
-//             localStorage.setItem("authUser",JSON.stringify(res.data));
-//             dispatch(login({
-//                 token:res.data.access_token,
-//             }))
-//
-//         }).catch(err=>{
-//             console.log(err);
-//         })
-//     },updateToken)
-//     return ()=>clearInterval(interval);
-// },[])
+
     return (
         <Container className="mt-5">
             <section className="d-flex justify-content-center mb-3">
@@ -95,14 +79,17 @@ export default function Home() {
 
                 </div>
             </section>
-            <div className="mt-4 mb-4">
-                <p>Last 5 Search</p>
-                <ul>
-                    {/*{lastFiveSearch && lastFiveSearch.map((item, index) => (*/}
-                    {/*    <li key={index}>{item.query}</li>*/}
-                    {/*))}*/}
-                </ul>
-            </div>
+            {lastFiveSearch?(
+                <div className="mt-4 mb-4">
+                    <p>Last 5 Search</p>
+                    <ul>
+                        {lastFiveSearch && lastFiveSearch.map((item, index) => (
+                            <li key={index}>{item.query}</li>
+                        ))}
+                    </ul>
+                </div>
+            ):[]}
+
             <section className={isLoading ? "hold-body articles-sections" : 'articles-sections'}>
                 {topStories.map((item, index) => (
                     <TopStroy item={item} key={index}/>
