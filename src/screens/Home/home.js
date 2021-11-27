@@ -6,7 +6,14 @@ import {useHistory} from "react-router-dom";
 import useAxios from "../../util/useAxios";
 import storage from "../../util/storage";
 
+/**
+ *
+ * Home Screen
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Home() {
+
     const [topStories, setTopStories] = useState([]);
     const [category, setCategory] = useState('world');
     const [isLoading, setIsLoading] = useState(false);
@@ -32,16 +39,27 @@ export default function Home() {
         })
     }, [category])
 
+    /**
+     *
+     * Get the last Five search from local storage
+     */
     useEffect(()=>{
         setLastFiveSearch(storage.get("lastFive"));
 
     },[storage])
 
+    /**
+     *
+     * Update the category from the select
+     * @param e
+     */
     const handleChange = (e) => {
         setCategory(e.target.value);
     }
 
-
+    /**
+     * redirect to show details
+     */
     const handleSearch = () => {
         if (articlesSearch) {
             history.push(`/articles?query=${articlesSearch}`)

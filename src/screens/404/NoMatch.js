@@ -1,6 +1,11 @@
 import React from "react";
 
-
+/***
+ *
+ *  404 Component that return if the user enter a wrong url
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function NoMatch(){
     return (
         <div className="container mt-4">

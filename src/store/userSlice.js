@@ -48,16 +48,7 @@ export const userSlice = createSlice({
         }
     }
 })
-// /**
-//  * Get user from local stroage
-//  *
-//  * @returns {Object|Boolean}
-//  */
-// function getUser() {
-//     const user = storage.get('user-info');
-//     if (!user) return false;
-//     return user;
-// }
+
 
 export const {login, logout, searchQuery, errorMessage} = userSlice.actions;
 

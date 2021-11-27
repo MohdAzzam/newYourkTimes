@@ -6,20 +6,29 @@ import {useDispatch} from "react-redux";
 import {APIKEY} from "../Constanat";
 import storage from "./storage";
 
+/**
+ *
+ * Custom hook to call the api and regenrate the token and store it in redux then store it into local storage
+ * @returns {AxiosInstance}
+ */
 
 export default function useAxios() {
     const dispatch = useDispatch();
     const user = storage.get("authUser");
-
+    // instance from axios
     const axiosInstance = axios.create({
         baseURL: "https://api.nytimes.com/svc/",
+        // there is an error from nytimes api if i send the token with the request so i comment this out
         // headers: {Authorization: `Bearer ${user.token}`},
+        // the api key that nytimes need to access there api
         params: {
             "api-key": APIKEY,
         }
     })
 
-
+    /**
+     * this is the instance interceptors that we relay on to refresh the token every 15 minutes
+     */
     axiosInstance.interceptors.request.use(async config => {
         // get the token from localstorage and verify the time
         const userData = jwt_decode(user?.token)
@@ -29,6 +38,7 @@ export default function useAxios() {
         //then renew it
         let fiftyMinutes = 60 * 45;
         if (timeDiff <= fiftyMinutes && timeDiff > 0) {
+            //call the login api to refresh the token
             authHelper.login(userData).then(response => {
                 storage.set('authUser', response.data, true)
                 dispatch(login({
@@ -49,23 +59,3 @@ export default function useAxios() {
     });
     return axiosInstance;
 }
-
-// export const TopStoriesHelper = {
-//     list: (section) => {
-//         return axiosInstance.get(`topstories/v2/${section}.json`);
-//     },
-//     search: (query, page = 0) => {
-//         //&page=0 send it from pagination
-//         return axiosInstance.get(`search/v2/articlesearch.json?q=${query}&page=${page}`)
-//     },
-//     comments: (url) => {
-//
-//         return axiosInstance.get(`community/v3/user-content/url.json`, {
-//             params: {
-//                 offset: 0,
-//                 url: encodeURI(url)
-//             }
-//         });
-//     }
-//
-// }

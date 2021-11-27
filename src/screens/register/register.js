@@ -7,7 +7,12 @@ import {useDispatch} from "react-redux";
 import {authHelper} from "../../api/helpers/AuthHelper";
 import {login} from "../../store/userSlice";
 
-
+/**
+ *
+ * Register Screen
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Register() {
     const validation = Yup.object().shape({
         email: Yup.string()

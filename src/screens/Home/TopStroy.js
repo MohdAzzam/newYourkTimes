@@ -2,6 +2,13 @@ import React, {useState} from "react";
 import {Card, Collapse} from "react-bootstrap";
 import ShowDetails from "./showDetails";
 
+/**
+ *
+ * Top Story Component
+ * @param item
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function TopStroy({item}) {
     const [showDetails,setShowDetails]=useState(false);
     const [open, setOpen] = useState(false);
